@@ -1,0 +1,999 @@
+<!DOCTYPE html>
+<html lang="ru" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ПротоТПА-100 — Настольный термопластавтомат с 3D-печатной оснасткой</title>
+  <meta name="description" content="Отечественный настольный ручной термопластавтомат ПротоТПА-100 для прототипирования и мелкосерийного литья пластиковых изделий в фотополимерные 3D-печатные пресс-формы." />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet" />
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+          colors: {
+            brand: {
+              dark: '#0B192C',
+              graphite: '#11223A',
+              blue: '#0095FF',
+              blueHover: '#007CE0',
+              surface: '#F4F7FA',
+              border: '#DCE3EC',
+            }
+          }
+        }
+      }
+    };
+  </script>
+  <style>
+    /* Инженерная сетка для Hero-секции */
+    .tech-grid {
+      background-size: 40px 40px;
+      background-image: 
+        linear-gradient(to right, rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+    }
+    .blueprint-box {
+      background-image: radial-gradient(rgba(0, 149, 255, 0.14) 1px, transparent 1px);
+      background-size: 16px 16px;
+    }
+  </style>
+</head>
+<body class="bg-white text-slate-900 font-sans antialiased selection:bg-brand-blue selection:text-white">
+
+  <!-- ==================== 1. HEADER ==================== -->
+  <header class="sticky top-0 z-40 bg-brand-dark/95 backdrop-blur-md border-b border-slate-800 text-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+      <!-- Логотип -->
+      <a href="#" class="flex items-center gap-3 group focus:outline-none">
+        <!-- Векторный знак пресс-формы / поршня со стрелкой впрыска -->
+        <svg class="w-10 h-10 shrink-0" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <rect width="64" height="64" rx="12" fill="#11223A" stroke="#1E3A5F" stroke-width="1.5"/>
+          <!-- Левая полуформа (слои 3D-печати) -->
+          <path d="M14 16H30V22H20V48H14V16Z" fill="#0095FF"/>
+          <path d="M23 25H30V30H23V25Z" fill="#38BDF8"/>
+          <path d="M23 33H30V38H23V33Z" fill="#38BDF8"/>
+          <!-- Правая металлическая/силовая часть -->
+          <path d="M35 16H47V24H43V40H47V48H35V16Z" fill="#E2E8F0"/>
+          <rect x="48" y="27" width="4" height="10" rx="1" fill="#94A3B8"/>
+          <!-- Стрелка подачи расплава -->
+          <path d="M24 47L36 33M36 33H29M36 33V40" stroke="#0095FF" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <div class="flex flex-col">
+          <span class="text-xl font-extrabold tracking-tight leading-none text-white">
+            Прото<span class="text-brand-blue">ТПА</span>-100
+          </span>
+          <span class="text-[11px] font-mono text-slate-400 tracking-wider uppercase mt-1">
+            Injection &amp; 3D Tooling
+          </span>
+        </div>
+      </a>
+
+      <!-- Десктопная навигация -->
+      <nav class="hidden lg:flex items-center gap-7 text-sm font-medium text-slate-300">
+        <a href="#specs" class="hover:text-brand-blue transition-colors">Оборудование</a>
+        <a href="#economics" class="hover:text-brand-blue transition-colors">Экономика</a>
+        <a href="#competitors" class="hover:text-brand-blue transition-colors">Сравнение</a>
+        <a href="#applications" class="hover:text-brand-blue transition-colors">Применение</a>
+        <a href="#roadmap" class="hover:text-brand-blue transition-colors">Дорожная карта</a>
+        <a href="#team" class="hover:text-brand-blue transition-colors">Команда</a>
+      </nav>
+
+      <!-- Кнопка CTA в шапке + бургер -->
+      <div class="flex items-center gap-3">
+        <button onclick="openModal('Запрос КП / Пилотирование')" class="hidden sm:inline-flex items-center justify-center px-4 py-2.5 text-sm font-semibold text-white bg-brand-blue hover:bg-brand-blueHover rounded-lg transition-colors shadow-sm">
+          Запросить пилот / КП
+        </button>
+        <button id="mobile-menu-btn" type="button" class="lg:hidden p-2.5 rounded-lg text-slate-300 hover:text-white hover:bg-brand-graphite focus:outline-none" aria-label="Открыть меню">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Мобильное меню -->
+    <div id="mobile-menu" class="hidden lg:hidden bg-brand-graphite border-b border-slate-800 px-4 pt-2 pb-5 space-y-2">
+      <a href="#specs" class="block px-3 py-2 rounded-md text-base font-medium text-slate-200 hover:bg-brand-dark">Оборудование</a>
+      <a href="#economics" class="block px-3 py-2 rounded-md text-base font-medium text-slate-200 hover:bg-brand-dark">Экономика</a>
+      <a href="#competitors" class="block px-3 py-2 rounded-md text-base font-medium text-slate-200 hover:bg-brand-dark">Сравнение</a>
+      <a href="#applications" class="block px-3 py-2 rounded-md text-base font-medium text-slate-200 hover:bg-brand-dark">Применение</a>
+      <a href="#roadmap" class="block px-3 py-2 rounded-md text-base font-medium text-slate-200 hover:bg-brand-dark">Дорожная карта</a>
+      <a href="#team" class="block px-3 py-2 rounded-md text-base font-medium text-slate-200 hover:bg-brand-dark">Команда</a>
+      <div class="pt-2">
+        <button onclick="openModal('Запрос КП / Пилотирование')" class="w-full py-3 text-center text-sm font-semibold text-white bg-brand-blue hover:bg-brand-blueHover rounded-lg">
+          Запросить пилот / КП
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ==================== 2. HERO SECTION ==================== -->
+  <section class="relative bg-brand-dark tech-grid text-white overflow-hidden border-b border-slate-800">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-24">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+        <!-- Левая колонка: оффер и цифры -->
+        <div class="lg:col-span-7 space-y-6">
+          <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-md bg-brand-graphite border border-slate-700 text-xs sm:text-sm font-medium text-brand-blue">
+            <span class="w-2 h-2 rounded-full bg-brand-blue"></span>
+            Отечественное оборудование для прототипирования и малых серий
+          </div>
+
+          <h1 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight leading-[1.15] text-white">
+            Настольный термопластавтомат <span class="text-brand-blue">ПротоТПА‑100</span> с 3D‑печатной оснасткой
+          </h1>
+
+          <p class="text-base sm:text-lg text-slate-300 leading-relaxed max-w-2xl">
+            Запуск мелкосерийного литья пластиковых изделий за 1 рабочий день. Замена дорогих металлических пресс-форм на фотополимерную 3D-печать без потери точности геометрии.
+          </p>
+
+          <!-- Кнопки CTA -->
+          <div class="flex flex-col sm:flex-row gap-4 pt-2">
+            <button onclick="openModal('Заявка на пилотирование ПротоТПА-100')" class="inline-flex items-center justify-center px-6 py-3.5 text-base font-semibold text-white bg-brand-blue hover:bg-brand-blueHover rounded-lg transition-colors shadow-lg shadow-brand-blue/20">
+              Оставить заявку на пилот
+            </button>
+            <a href="#specs" class="inline-flex items-center justify-center px-6 py-3.5 text-base font-semibold text-slate-200 bg-brand-graphite hover:bg-slate-800 border border-slate-700 rounded-lg transition-colors">
+              Смотреть характеристики
+            </a>
+          </div>
+
+          <!-- 3 ключевых показателя в цифрах -->
+          <div class="grid grid-cols-3 gap-4 sm:gap-6 pt-6 border-t border-slate-800">
+            <div>
+              <div class="font-mono text-2xl sm:text-3xl font-bold text-white">до 100 г</div>
+              <div class="text-xs sm:text-sm text-slate-400 mt-1">Объём впрыска за цикл</div>
+            </div>
+            <div>
+              <div class="font-mono text-2xl sm:text-3xl font-bold text-brand-blue">220 В</div>
+              <div class="text-xs sm:text-sm text-slate-400 mt-1">Питание от обычной сети</div>
+            </div>
+            <div>
+              <div class="font-mono text-2xl sm:text-3xl font-bold text-white">в 5–10 раз</div>
+              <div class="text-xs sm:text-sm text-slate-400 mt-1">Снижение затрат на оснастку</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Правая колонка: Инженерная схема установки (SVG-чертёж компоновки) -->
+        <div class="lg:col-span-5">
+          <div class="bg-brand-graphite border border-slate-700/80 rounded-xl p-5 sm:p-6 shadow-2xl">
+            <div class="flex items-center justify-between border-b border-slate-700 pb-3 mb-4">
+              <span class="font-mono text-xs text-slate-400 uppercase tracking-wider">Схема узлов • ПротоТПА-100</span>
+              <span class="font-mono text-xs px-2 py-0.5 rounded bg-brand-dark text-brand-blue border border-slate-700">CAD v1.4</span>
+            </div>
+            <!-- Векторный инженерный эскиз установки -->
+            <div class="bg-brand-dark rounded-lg p-4 border border-slate-800 flex items-center justify-center">
+              <svg viewBox="0 0 420 290" class="w-full h-auto" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <!-- Сетка чертежа -->
+                <path d="M0 40H420M0 100H420M0 160H420M0 220H420M60 0V290M140 0V290M220 0V290M300 0V290M380 0V290" stroke="#1E293B" stroke-width="0.75"/>
+                <!-- Станина / основание -->
+                <rect x="30" y="235" width="360" height="22" rx="3" fill="#1E293B" stroke="#475569" stroke-width="1.5"/>
+                <rect x="45" y="257" width="28" height="8" rx="1" fill="#334155"/>
+                <rect x="347" y="257" width="28" height="8" rx="1" fill="#334155"/>
+                <!-- Вертикальная стойка узла впрыска -->
+                <rect x="145" y="65" width="24" height="170" rx="2" fill="#1E293B" stroke="#64748B" stroke-width="1.5"/>
+                <!-- Бункер для полимерных гранул -->
+                <path d="M115 24H165L152 65H128L115 24Z" fill="#0F172A" stroke="#0095FF" stroke-width="1.5"/>
+                <circle cx="136" cy="40" r="2.5" fill="#0095FF"/>
+                <circle cx="144" cy="44" r="2.5" fill="#38BDF8"/>
+                <circle cx="139" cy="51" r="2.5" fill="#0095FF"/>
+                <!-- Нагревательный цилиндр и шнековый узел -->
+                <rect x="132" y="75" width="28" height="75" rx="2" fill="#334155" stroke="#94A3B8" stroke-width="1.5"/>
+                <!-- Нагревательные хомуты -->
+                <rect x="129" y="88" width="34" height="12" rx="1" fill="#0095FF" fill-opacity="0.25" stroke="#0095FF" stroke-width="1.2"/>
+                <rect x="129" y="112" width="34" height="12" rx="1" fill="#0095FF" fill-opacity="0.25" stroke="#0095FF" stroke-width="1.2"/>
+                <!-- Сопло -->
+                <path d="M140 150H152L149 162H143L140 150Z" fill="#CBD5E1"/>
+                <!-- Рычажный ручной привод впрыска -->
+                <line x1="146" y1="75" x2="146" y2="30" stroke="#94A3B8" stroke-width="3"/>
+                <line x1="146" y1="32" x2="235" y2="18" stroke="#E2E8F0" stroke-width="4" stroke-linecap="round"/>
+                <circle cx="235" cy="18" r="6" fill="#0095FF"/>
+                <!-- 3D-печатная фотополимерная пресс-форма (разъёмная) -->
+                <rect x="112" y="164" width="33" height="46" rx="2" fill="#0095FF" fill-opacity="0.2" stroke="#0095FF" stroke-width="1.8"/>
+                <rect x="147" y="164" width="33" height="46" rx="2" fill="#0095FF" fill-opacity="0.2" stroke="#0095FF" stroke-width="1.8"/>
+                <!-- Полость отливки -->
+                <rect x="141" y="176" width="10" height="22" rx="1" fill="#38BDF8"/>
+                <!-- Узел смыкания пресс-формы -->
+                <rect x="85" y="172" width="27" height="30" rx="2" fill="#475569"/>
+                <rect x="180" y="172" width="45" height="30" rx="2" fill="#475569"/>
+                <line x1="225" y1="187" x2="265" y2="187" stroke="#CBD5E1" stroke-width="4"/>
+                <line x1="265" y1="168" x2="265" y2="206" stroke="#0095FF" stroke-width="3.5" stroke-linecap="round"/>
+                <!-- Блок электроники и ПИД-терморегуляции -->
+                <rect x="285" y="115" width="92" height="120" rx="4" fill="#0F172A" stroke="#475569" stroke-width="1.5"/>
+                <rect x="298" y="130" width="66" height="28" rx="2" fill="#0B192C" stroke="#0095FF" stroke-width="1"/>
+                <text x="307" y="149" fill="#0095FF" font-family="monospace" font-size="13" font-weight="bold">235.0°C</text>
+                <circle cx="310" cy="178" r="5" fill="#10B981"/>
+                <circle cx="331" cy="178" r="5" fill="#0095FF"/>
+                <circle cx="352" cy="178" r="5" fill="#64748B"/>
+                <!-- Выноски -->
+                <text x="248" y="23" fill="#94A3B8" font-family="sans-serif" font-size="10">Рычаг впрыска</text>
+                <text x="172" y="108" fill="#38BDF8" font-family="sans-serif" font-size="10">Нагрев до 300°C</text>
+                <text x="32" y="190" fill="#38BDF8" font-family="sans-serif" font-size="10">3D-форма</text>
+                <text x="296" y="218" fill="#94A3B8" font-family="sans-serif" font-size="10">ПИД-контроллер</text>
+              </svg>
+            </div>
+            <div class="grid grid-cols-2 gap-3 mt-4 text-xs text-slate-300">
+              <div class="bg-brand-dark/70 px-3 py-2 rounded border border-slate-800">
+                <span class="text-slate-400 block">Материалы литья:</span>
+                <span class="font-medium text-white">ABS, PP, PE, PS, TPU</span>
+              </div>
+              <div class="bg-brand-dark/70 px-3 py-2 rounded border border-slate-800">
+                <span class="text-slate-400 block">Время цикла отливки:</span>
+                <span class="font-medium text-white">1–3 минуты / деталь</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== 3. ПРОБЛЕМА И РЕШЕНИЕ ==================== -->
+  <section class="py-16 lg:py-24 bg-white border-b border-brand-border">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="max-w-3xl">
+        <span class="font-mono text-xs font-bold uppercase tracking-wider text-brand-blue">Барьер входа в индустрию</span>
+        <h2 class="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-brand-dark mt-2">
+          Почему классическое литьё недоступно для малых серий
+        </h2>
+        <p class="text-slate-600 mt-4 text-base sm:text-lg">
+          Металлическая пресс-форма делает производство опытных партий от 10 до 500 деталей экономически нецелесообразным, а обычная 3D-печать изделий не обеспечивает прочность серийных термопластов.
+        </p>
+      </div>
+
+      <!-- Сравнение двух подходов -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-12">
+        <!-- Традиционное литьё -->
+        <div class="bg-brand-surface border border-brand-border rounded-xl p-6 sm:p-8">
+          <div class="flex items-center justify-between pb-4 border-b border-brand-border">
+            <h3 class="text-lg sm:text-xl font-bold text-slate-800">Традиционное литьё в металлоформы</h3>
+            <span class="text-xs font-mono font-semibold px-2.5 py-1 rounded bg-slate-200 text-slate-700">Высокий порог</span>
+          </div>
+          <ul class="mt-6 space-y-4 text-slate-700">
+            <li class="flex items-start gap-3">
+              <span class="mt-1 w-5 h-5 rounded-full bg-slate-300 text-slate-700 flex items-center justify-center text-xs font-bold shrink-0">✕</span>
+              <div>
+                <strong class="text-slate-900">Стоимость оснастки от 150 000 ₽ до 1+ млн ₽.</strong> Фрезеровка стали и алюминия на ЧПУ не окупается на малых тиражах.
+              </div>
+            </li>
+            <li class="flex items-start gap-3">
+              <span class="mt-1 w-5 h-5 rounded-full bg-slate-300 text-slate-700 flex items-center justify-center text-xs font-bold shrink-0">✕</span>
+              <div>
+                <strong class="text-slate-900">Срок изготовления 3–8 недель.</strong> Любая конструктивная правка модели требует дорогой переделки металла.
+              </div>
+            </li>
+            <li class="flex items-start gap-3">
+              <span class="mt-1 w-5 h-5 rounded-full bg-slate-300 text-slate-700 flex items-center justify-center text-xs font-bold shrink-0">✕</span>
+              <div>
+                <strong class="text-slate-900">Требования к цеху: 380 В, компрессоры, чиллеры.</strong> Промышленный ТПА невозможно разместить в лаборатории или офисе КБ.
+              </div>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Технология ПротоТПА-100 -->
+        <div class="bg-brand-dark text-white border border-slate-800 rounded-xl p-6 sm:p-8 shadow-lg">
+          <div class="flex items-center justify-between pb-4 border-b border-slate-800">
+            <h3 class="text-lg sm:text-xl font-bold text-white">Технология ПротоТПА‑100 + 3D‑форма</h3>
+            <span class="text-xs font-mono font-semibold px-2.5 py-1 rounded bg-brand-blue/20 text-brand-blue border border-brand-blue/40">Решение</span>
+          </div>
+          <ul class="mt-6 space-y-4 text-slate-300">
+            <li class="flex items-start gap-3">
+              <span class="mt-1 w-5 h-5 rounded-full bg-brand-blue text-white flex items-center justify-center text-xs font-bold shrink-0">✓</span>
+              <div>
+                <strong class="text-white">Печать формы за 4–12 часов по себестоимости смолы (1 500 – 5 000 ₽).</strong> Используется стандартный фотополимерный 3D-принтер (SLA/DLP).
+              </div>
+            </li>
+            <li class="flex items-start gap-3">
+              <span class="mt-1 w-5 h-5 rounded-full bg-brand-blue text-white flex items-center justify-center text-xs font-bold shrink-0">✓</span>
+              <div>
+                <strong class="text-white">Быстрые итерации за 1 рабочий день.</strong> Обновили CAD-модель утром — вечером получили отливку из реального гранулята.
+              </div>
+            </li>
+            <li class="flex items-start gap-3">
+              <span class="mt-1 w-5 h-5 rounded-full bg-brand-blue text-white flex items-center justify-center text-xs font-bold shrink-0">✓</span>
+              <div>
+                <strong class="text-white">Настольный формат и розетка 220 В.</strong> Станок устанавливается на обычный лабораторный стол без пневмолиний и гидростанций.
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Визуальная схема технологической цепочки в 4 шага -->
+      <div class="mt-14 pt-10 border-t border-brand-border">
+        <div class="text-xs font-mono font-bold uppercase tracking-wider text-slate-500 mb-6">
+          Технологический цикл: от файла до серии
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div class="relative bg-brand-surface border border-brand-border rounded-lg p-5">
+            <div class="font-mono text-xs font-bold text-brand-blue mb-2">ШАГ 01</div>
+            <h4 class="text-base font-bold text-brand-dark">3D-модель в CAD</h4>
+            <p class="text-sm text-slate-600 mt-1.5">Проектирование матрицы, литниковой системы и выпоров по нашей методике.</p>
+          </div>
+          <div class="relative bg-brand-surface border border-brand-border rounded-lg p-5">
+            <div class="font-mono text-xs font-bold text-brand-blue mb-2">ШАГ 02</div>
+            <h4 class="text-base font-bold text-brand-dark">Печать формы (SLA/DLP)</h4>
+            <p class="text-sm text-slate-600 mt-1.5">Выращивание полуформ на фотополимерном 3D-принтере за 4–12 часов.</p>
+          </div>
+          <div class="relative bg-brand-surface border border-brand-border rounded-lg p-5">
+            <div class="font-mono text-xs font-bold text-brand-blue mb-2">ШАГ 03</div>
+            <h4 class="text-base font-bold text-brand-dark">Отливка на ПротоТПА‑100</h4>
+            <p class="text-sm text-slate-600 mt-1.5">Засыпка гранул, расплав и контролируемый ручной впрыск под давлением.</p>
+          </div>
+          <div class="relative bg-brand-dark text-white border border-slate-800 rounded-lg p-5">
+            <div class="font-mono text-xs font-bold text-brand-blue mb-2">ШАГ 04</div>
+            <h4 class="text-base font-bold text-white">Готовая деталь из пластика</h4>
+            <p class="text-sm text-slate-300 mt-1.5">Полноценное изделие из серийного полимера (АБС, ПП, ПЭ) с точностью литья.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== 4. ТЕХНИЧЕСКИЕ ХАРАКТЕРИСТИКИ И КОМПЛЕКТАЦИЯ ==================== -->
+  <section id="specs" class="py-16 lg:py-24 bg-brand-surface border-b border-brand-border">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="max-w-3xl">
+        <span class="font-mono text-xs font-bold uppercase tracking-wider text-brand-blue">Спецификация оборудования</span>
+        <h2 class="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-brand-dark mt-2">
+          Технические характеристики и комплектация
+        </h2>
+        <p class="text-slate-600 mt-3 text-base sm:text-lg">
+          Конструкция ПротоТПА‑100 оптимизирована для безопасной эксплуатации в учебных лабораториях и малых цехах.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 mt-10">
+        <!-- Таблица ТТХ -->
+        <div class="lg:col-span-7 bg-white border border-brand-border rounded-xl overflow-hidden shadow-sm">
+          <div class="px-6 py-4 bg-brand-dark text-white font-semibold text-sm flex items-center justify-between">
+            <span>Паспортные параметры ПротоТПА‑100</span>
+            <span class="font-mono text-xs text-brand-blue">ТУ / КД РФ</span>
+          </div>
+          <dl class="divide-y divide-brand-border text-sm sm:text-base">
+            <div class="px-6 py-4 grid grid-cols-1 sm:grid-cols-2 gap-1">
+              <dt class="font-medium text-slate-500">Тип привода</dt>
+              <dd class="font-semibold text-brand-dark">Ручной настольный с контролируемым усилием впрыска</dd>
+            </div>
+            <div class="px-6 py-4 grid grid-cols-1 sm:grid-cols-2 gap-1 bg-slate-50/60">
+              <dt class="font-medium text-slate-500">Максимальный объём впрыска</dt>
+              <dd class="font-mono font-bold text-brand-blue">до 100 г</dd>
+            </div>
+            <div class="px-6 py-4 grid grid-cols-1 sm:grid-cols-2 gap-1">
+              <dt class="font-medium text-slate-500">Электропитание</dt>
+              <dd class="font-semibold text-brand-dark">Однофазная сеть 220 В, 50 Гц</dd>
+            </div>
+            <div class="px-6 py-4 grid grid-cols-1 sm:grid-cols-2 gap-1 bg-slate-50/60">
+              <dt class="font-medium text-slate-500">Требования к инфраструктуре</dt>
+              <dd class="font-semibold text-brand-dark">Не требует компрессора, гидростанции и чиллера</dd>
+            </div>
+            <div class="px-6 py-4 grid grid-cols-1 sm:grid-cols-2 gap-1">
+              <dt class="font-medium text-slate-500">Совместимая оснастка</dt>
+              <dd class="font-semibold text-brand-dark">Фотополимерные 3D‑печатные формы и стандартные металлоформы</dd>
+            </div>
+            <div class="px-6 py-4 grid grid-cols-1 sm:grid-cols-2 gap-1 bg-slate-50/60">
+              <dt class="font-medium text-slate-500">Перерабатываемые полимеры</dt>
+              <dd class="font-semibold text-brand-dark">ABS, PP, HDPE/LDPE, PS, EVA и др. (до 300 °C)</dd>
+            </div>
+          </dl>
+        </div>
+
+        <!-- Комплект поставки -->
+        <div class="lg:col-span-5 flex flex-col justify-between bg-white border border-brand-border rounded-xl p-6 sm:p-8 shadow-sm">
+          <div>
+            <div class="inline-block font-mono text-xs font-bold uppercase tracking-wider text-brand-blue bg-brand-blue/10 px-2.5 py-1 rounded">
+              Базовый комплект поставки
+            </div>
+            <h3 class="text-xl font-bold text-brand-dark mt-3">Всё необходимое для запуска литья</h3>
+            <p class="text-sm text-slate-600 mt-2">
+              Заказчик получает не просто железо, а отработанную технологию проектирования и эксплуатации 3D‑оснастки.
+            </p>
+            <ul class="mt-6 space-y-4">
+              <li class="flex items-start gap-3">
+                <span class="font-mono text-xs font-bold px-2 py-0.5 rounded bg-brand-dark text-white mt-0.5">01</span>
+                <div>
+                  <div class="font-bold text-brand-dark text-sm sm:text-base">Станок ПротоТПА‑100 в сборе</div>
+                  <div class="text-xs sm:text-sm text-slate-600">Настроенный узел пластикации, ПИД-терморегулятор и узел смыкания.</div>
+                </div>
+              </li>
+              <li class="flex items-start gap-3">
+                <span class="font-mono text-xs font-bold px-2 py-0.5 rounded bg-brand-dark text-white mt-0.5">02</span>
+                <div>
+                  <div class="font-bold text-brand-dark text-sm sm:text-base">Комплект конструкторской документации (КД)</div>
+                  <div class="text-xs sm:text-sm text-slate-600">Паспорт оборудования, руководство по эксплуатации и обслуживанию.</div>
+                </div>
+              </li>
+              <li class="flex items-start gap-3">
+                <span class="font-mono text-xs font-bold px-2 py-0.5 rounded bg-brand-dark text-white mt-0.5">03</span>
+                <div>
+                  <div class="font-bold text-brand-dark text-sm sm:text-base">Методика проектирования 3D-печатных форм</div>
+                  <div class="text-xs sm:text-sm text-slate-600">Рекомендации по толщине стенок, уклонам, литникам и выбору фотополимеров.</div>
+                </div>
+              </li>
+              <li class="flex items-start gap-3">
+                <span class="font-mono text-xs font-bold px-2 py-0.5 rounded bg-brand-dark text-white mt-0.5">04</span>
+                <div>
+                  <div class="font-bold text-brand-dark text-sm sm:text-base">Регламент температурных режимов</div>
+                  <div class="text-xs sm:text-sm text-slate-600">Карты настройки температур и выдержки под популярные марки гранул.</div>
+                </div>
+              </li>
+            </ul>
+          </div>
+
+          <div class="mt-8 pt-5 border-t border-brand-border">
+            <button onclick="openModal('Запрос паспорта и КД на ПротоТПА-100')" class="w-full py-3 px-4 bg-brand-dark hover:bg-brand-graphite text-white text-sm font-semibold rounded-lg transition-colors">
+              Запросить спецификацию и КП
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== 5. ЭКОНОМИКА И СРАВНЕНИЕ С КОНКУРЕНТАМИ ==================== -->
+  <section id="economics" class="py-16 lg:py-24 bg-white border-b border-brand-border">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <!-- Таблица 1: Экономика запуска партии -->
+      <div class="max-w-3xl">
+        <span class="font-mono text-xs font-bold uppercase tracking-wider text-brand-blue">Экономическая эффективность</span>
+        <h2 class="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-brand-dark mt-2">
+          Экономика запуска опытной партии
+        </h2>
+        <p class="text-slate-600 mt-3 text-base sm:text-lg">
+          Сравнение затрат на подготовку производства первой партии пластиковых деталей (до 100–300 шт.).
+        </p>
+      </div>
+
+      <div class="mt-8 overflow-x-auto border border-brand-border rounded-xl shadow-sm">
+        <table class="w-full text-left border-collapse min-w-[640px]">
+          <thead>
+            <tr class="bg-brand-dark text-white text-sm">
+              <th class="py-4 px-6 font-semibold w-1/3">Показатель</th>
+              <th class="py-4 px-6 font-semibold w-1/3">Металлическая пресс-форма</th>
+              <th class="py-4 px-6 font-semibold w-1/3 bg-brand-blue text-white">Фотополимерная форма на ПротоТПА‑100</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-brand-border text-sm sm:text-base">
+            <tr>
+              <td class="py-4 px-6 font-semibold text-brand-dark">Стоимость изготовления оснастки</td>
+              <td class="py-4 px-6 text-slate-600 font-mono">150 000 – 500 000 ₽</td>
+              <td class="py-4 px-6 font-mono font-bold text-brand-blue bg-brand-blue/5">1 500 – 5 000 ₽</td>
+            </tr>
+            <tr>
+              <td class="py-4 px-6 font-semibold text-brand-dark">Срок получения первой отливки</td>
+              <td class="py-4 px-6 text-slate-600">3 – 8 недель</td>
+              <td class="py-4 px-6 font-bold text-brand-dark bg-brand-blue/5">4 – 12 часов</td>
+            </tr>
+            <tr>
+              <td class="py-4 px-6 font-semibold text-brand-dark">Стоимость внесения правок в деталь</td>
+              <td class="py-4 px-6 text-slate-600">От 30 000 ₽ (перефрезеровка / новая матрица)</td>
+              <td class="py-4 px-6 font-bold text-brand-dark bg-brand-blue/5">~1 500 ₽ (печать новой версии формы за ночь)</td>
+            </tr>
+            <tr>
+              <td class="py-4 px-6 font-semibold text-brand-dark">Оптимальный тираж</td>
+              <td class="py-4 px-6 text-slate-600">От 10 000+ изделий</td>
+              <td class="py-4 px-6 font-bold text-brand-dark bg-brand-blue/5">Прототипы и малые серии 1–300 изделий</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Таблица 2: Сравнение с аналогами на рынке -->
+      <div id="competitors" class="mt-20 pt-4">
+        <div class="max-w-3xl">
+          <span class="font-mono text-xs font-bold uppercase tracking-wider text-brand-blue">Конкурентный анализ</span>
+          <h2 class="text-2xl sm:text-3xl font-extrabold text-brand-dark mt-2">
+            Сравнение с аналогами на рынке
+          </h2>
+          <p class="text-slate-600 mt-3 text-base sm:text-lg">
+            ПротоТПА‑100 закрывает нишу между маломощными ручными прессами и дорогими настольными ТПА под металлоформы.
+          </p>
+        </div>
+
+        <div class="mt-8 overflow-x-auto border border-brand-border rounded-xl shadow-sm">
+          <table class="w-full text-left border-collapse min-w-[760px]">
+            <thead>
+              <tr class="bg-brand-surface border-b border-brand-border text-xs sm:text-sm font-bold text-brand-dark uppercase tracking-wider">
+                <th class="py-4 px-5">Оборудование</th>
+                <th class="py-4 px-5">Цена станка</th>
+                <th class="py-4 px-5">Объём впрыска</th>
+                <th class="py-4 px-5">Оснастка</th>
+                <th class="py-4 px-5">Ключевые особенности</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-brand-border text-sm">
+              <!-- Наш проект -->
+              <tr class="bg-brand-dark text-white">
+                <td class="py-4 px-5 font-bold text-base">
+                  ПротоТПА‑100 <span class="ml-1.5 text-xs font-mono px-2 py-0.5 rounded bg-brand-blue text-white">Наш продукт</span>
+                </td>
+                <td class="py-4 px-5 font-mono font-semibold text-brand-blue">Доступный сегмент РФ</td>
+                <td class="py-4 px-5 font-mono font-bold">до 100 г</td>
+                <td class="py-4 px-5 font-semibold text-emerald-400">3D-печатные формы + металл</td>
+                <td class="py-4 px-5 text-slate-200">220 В, штатная методика работы с фотополимером, РФ-комплектующие</td>
+              </tr>
+              <!-- РЛМ -->
+              <tr>
+                <td class="py-4 px-5 font-semibold text-brand-dark">Ручной термопласт РЛМ (РФ)</td>
+                <td class="py-4 px-5 font-mono text-slate-700">90 – 100 тыс. ₽</td>
+                <td class="py-4 px-5 font-mono text-slate-700">до 30 см³</td>
+                <td class="py-4 px-5 text-slate-700">Только металлоформы</td>
+                <td class="py-4 px-5 text-slate-600">Малый объём впрыска (не подходит для корпусов), нет работы с 3D-формами</td>
+              </tr>
+              <!-- МиниТПА-100 / MegaTech / PLASTRON -->
+              <tr class="bg-brand-surface/50">
+                <td class="py-4 px-5 font-semibold text-brand-dark">МиниТПА‑100 / MegaTech / PLASTRON (РФ)</td>
+                <td class="py-4 px-5 font-mono text-slate-700">350 – 800 тыс. ₽</td>
+                <td class="py-4 px-5 font-mono text-slate-700">до 100 см³</td>
+                <td class="py-4 px-5 text-slate-700">Металлоформы от 150 тыс. ₽</td>
+                <td class="py-4 px-5 text-slate-600">Высокая совокупная стоимость входа (станок + оснастка от 500 тыс. ₽)</td>
+              </tr>
+              <!-- APSX-PIM -->
+              <tr>
+                <td class="py-4 px-5 font-semibold text-brand-dark">APSX‑PIM (США)</td>
+                <td class="py-4 px-5 font-mono text-slate-700">13 000 – 15 000 USD</td>
+                <td class="py-4 px-5 font-mono text-slate-700">до 30–50 г</td>
+                <td class="py-4 px-5 text-slate-700">Алюминиевые / стальные формы</td>
+                <td class="py-4 px-5 text-slate-600">Высокая цена, санкционные риски, отсутствие локального сервиса в РФ</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== 6. ОБЛАСТИ ПРИМЕНЕНИЯ (B2B / B2G) ==================== -->
+  <section id="applications" class="py-16 lg:py-24 bg-brand-surface border-b border-brand-border">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="max-w-3xl">
+        <span class="font-mono text-xs font-bold uppercase tracking-wider text-brand-blue">Целевые рынки</span>
+        <h2 class="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-brand-dark mt-2">
+          Области применения: B2B и B2G сегменты
+        </h2>
+        <p class="text-slate-600 mt-3 text-base sm:text-lg">
+          Потенциал рынка России — сотни установок в горизонте 3–5 лет за счёт доступной цены владения.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-10">
+        <!-- Сегмент 1 -->
+        <div class="bg-white border border-brand-border rounded-xl p-6 sm:p-7 flex flex-col justify-between shadow-sm">
+          <div>
+            <div class="flex items-center justify-between mb-4">
+              <span class="font-mono text-xs font-bold px-2.5 py-1 rounded bg-brand-dark text-white">B2G • Образование</span>
+              <span class="font-mono text-sm font-bold text-brand-blue">1000+ вузов РФ</span>
+            </div>
+            <h3 class="text-xl font-bold text-brand-dark">Образование и наука</h3>
+            <p class="text-sm text-slate-600 mt-3 leading-relaxed">
+              Технические университеты, колледжи, детские технопарки «Кванториум» и ЦМИТы. Наглядный учебный стенд для практикумов по переработке полимеров и проектированию пресс-форм.
+            </p>
+          </div>
+          <div class="mt-6 pt-4 border-t border-brand-border text-xs font-mono text-slate-500">
+            Безопасно для учебных аудиторий (220 В)
+          </div>
+        </div>
+
+        <!-- Сегмент 2 -->
+        <div class="bg-white border border-brand-border rounded-xl p-6 sm:p-7 flex flex-col justify-between shadow-sm">
+          <div>
+            <div class="flex items-center justify-between mb-4">
+              <span class="font-mono text-xs font-bold px-2.5 py-1 rounded bg-brand-dark text-white">B2B • R&amp;D</span>
+              <span class="font-mono text-sm font-bold text-brand-blue">НИОКР и КБ</span>
+            </div>
+            <h3 class="text-xl font-bold text-brand-dark">Инжиниринговые центры</h3>
+            <p class="text-sm text-slate-600 mt-3 leading-relaxed">
+              Выпуск функциональных предсерийных прототипов из реального конструкционного пластика для испытаний на прочность и собираемость перед заказом дорогой металлоформы.
+            </p>
+          </div>
+          <div class="mt-6 pt-4 border-t border-brand-border text-xs font-mono text-slate-500">
+            Проверка гипотез за 1 рабочий день
+          </div>
+        </div>
+
+        <!-- Сегмент 3 -->
+        <div class="bg-white border border-brand-border rounded-xl p-6 sm:p-7 flex flex-col justify-between shadow-sm">
+          <div>
+            <div class="flex items-center justify-between mb-4">
+              <span class="font-mono text-xs font-bold px-2.5 py-1 rounded bg-brand-dark text-white">B2B • Производство</span>
+              <span class="font-mono text-sm font-bold text-brand-blue">МСП сектора</span>
+            </div>
+            <h3 class="text-xl font-bold text-brand-dark">Малые производственные предприятия</h3>
+            <p class="text-sm text-slate-600 mt-3 leading-relaxed">
+              Приборостроение, электроника, выпуск корпусов РЭА, заглушек, крепежа, шестерён и фурнитуры малыми партиями без зависимости от крупных литейных заводов.
+            </p>
+          </div>
+          <div class="mt-6 pt-4 border-t border-brand-border text-xs font-mono text-slate-500">
+            Отливка деталей массой до 100 г
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== 7. БИЗНЕС-МОДЕЛЬ ==================== -->
+  <section class="py-16 lg:py-24 bg-white border-b border-brand-border">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="max-w-3xl">
+        <span class="font-mono text-xs font-bold uppercase tracking-wider text-brand-blue">Монетизация</span>
+        <h2 class="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-brand-dark mt-2">
+          Бизнес-модель: 3 канала выручки
+        </h2>
+        <p class="text-slate-600 mt-3 text-base sm:text-lg">
+          Сочетание разовых продаж оборудования, комплексных поставок рабочих мест и регулярных заказов на оснастку.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-10">
+        <div class="border-l-4 border-brand-blue bg-brand-surface p-6 rounded-r-xl">
+          <div class="font-mono text-xs font-bold text-slate-500">КАНАЛ 01 • ОСНОВНОЙ</div>
+          <h3 class="text-lg font-bold text-brand-dark mt-2">Прямые продажи станков ПротоТПА‑100</h3>
+          <p class="text-sm text-slate-600 mt-2 leading-relaxed">
+            Поставка серийных установок с комплектом КД и методикой в вузы, технопарки, инжиниринговые центры и производственные компании.
+          </p>
+        </div>
+
+        <div class="border-l-4 border-brand-dark bg-brand-surface p-6 rounded-r-xl">
+          <div class="font-mono text-xs font-bold text-slate-500">КАНАЛ 02 • ПОВЫШЕННЫЙ ЧЕК</div>
+          <h3 class="text-lg font-bold text-brand-dark mt-2">Поставка рабочих мест «под ключ»</h3>
+          <p class="text-sm text-slate-600 mt-2 leading-relaxed">
+            Комплексный набор: ПротоТПА‑100 + рекомендованный фотополимерный 3D‑принтер + стартовый комплект термостойкой смолы и полимерных гранул.
+          </p>
+        </div>
+
+        <div class="border-l-4 border-brand-blue bg-brand-surface p-6 rounded-r-xl">
+          <div class="font-mono text-xs font-bold text-slate-500">КАНАЛ 03 • ПОВТОРНЫЕ ПРОДАЖИ</div>
+          <h3 class="text-lg font-bold text-brand-dark mt-2">Изготовление 3D-форм и сервис</h3>
+          <p class="text-sm text-slate-600 mt-2 leading-relaxed">
+            Проектирование и печать фотополимерных пресс-форм на заказ по моделям клиентов, поставка сменных нагревательных узлов и методическая поддержка.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== 8. ДОРОЖНАЯ КАРТА И ТЕКУЩИЙ СТАТУС ==================== -->
+  <section id="roadmap" class="py-16 lg:py-24 bg-brand-dark text-white border-b border-slate-800">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="max-w-3xl">
+        <span class="font-mono text-xs font-bold uppercase tracking-wider text-brand-blue">План реализации</span>
+        <h2 class="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-white mt-2">
+          Дорожная карта и текущий статус
+        </h2>
+        <p class="text-slate-300 mt-3 text-base sm:text-lg">
+          Поэтапный переход от конструкторской документации к пилотным внедрениям и мелкосерийной сборке.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-12">
+        <!-- Этап 1 -->
+        <div class="bg-brand-graphite border-2 border-brand-blue rounded-xl p-6 relative">
+          <div class="flex items-center justify-between mb-4">
+            <span class="font-mono text-xs font-bold text-brand-blue">ЭТАП 01</span>
+            <span class="text-[11px] font-mono font-semibold px-2 py-0.5 rounded bg-brand-blue text-white">В работе / База</span>
+          </div>
+          <h3 class="text-lg font-bold text-white">3D-модель и КД</h3>
+          <p class="text-sm text-slate-300 mt-2 leading-relaxed">
+            Разработка 3D-модели и конструкторской документации станка, инженерный расчёт шнековой группы, узла смыкания и тепловых режимов.
+          </p>
+        </div>
+
+        <!-- Этап 2 -->
+        <div class="bg-brand-graphite border border-slate-700 rounded-xl p-6">
+          <div class="flex items-center justify-between mb-4">
+            <span class="font-mono text-xs font-bold text-slate-400">ЭТАП 02</span>
+            <span class="text-[11px] font-mono px-2 py-0.5 rounded bg-slate-800 text-slate-300">Сборка</span>
+          </div>
+          <h3 class="text-lg font-bold text-white">Опытный образец</h3>
+          <p class="text-sm text-slate-300 mt-2 leading-relaxed">
+            Высокоточная мехобработка шнека и материального цилиндра, сборка рамы, монтаж нагревателей и отладка силовой электроники.
+          </p>
+        </div>
+
+        <!-- Этап 3 -->
+        <div class="bg-brand-graphite border border-slate-700 rounded-xl p-6">
+          <div class="flex items-center justify-between mb-4">
+            <span class="font-mono text-xs font-bold text-slate-400">ЭТАП 03</span>
+            <span class="text-[11px] font-mono px-2 py-0.5 rounded bg-slate-800 text-slate-300">НИОКР / Тесты</span>
+          </div>
+          <h3 class="text-lg font-bold text-white">Испытания 3D-форм</h3>
+          <p class="text-sm text-slate-300 mt-2 leading-relaxed">
+            Серия тестовых отливок на фотополимерных пресс-формах, определение ресурса оснастки на разных марках пластиков, финализация методики.
+          </p>
+        </div>
+
+        <!-- Этап 4 -->
+        <div class="bg-brand-graphite border border-slate-700 rounded-xl p-6">
+          <div class="flex items-center justify-between mb-4">
+            <span class="font-mono text-xs font-bold text-slate-400">ЭТАП 04</span>
+            <span class="text-[11px] font-mono px-2 py-0.5 rounded bg-slate-800 text-slate-300">Масштабирование</span>
+          </div>
+          <h3 class="text-lg font-bold text-white">Пилоты и серия</h3>
+          <p class="text-sm text-slate-300 mt-2 leading-relaxed">
+            Пилотные внедрения на кафедрах вузов и в инжиниринговых центрах, сбор обратной связи и запуск мелкосерийной сборки установок.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== 9. КОМАНДА ПРОЕКТА ==================== -->
+  <section id="team" class="py-16 lg:py-24 bg-brand-surface border-b border-brand-border">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="max-w-3xl">
+        <span class="font-mono text-xs font-bold uppercase tracking-wider text-brand-blue">Компетенции</span>
+        <h2 class="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-brand-dark mt-2">
+          Инженерная команда проекта
+        </h2>
+        <p class="text-slate-600 mt-3 text-base sm:text-lg">
+          Ключевые компетенции по механике, электронике и алгоритмам управления закрыты внутри ядра команды.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-10">
+        <!-- Участник 1 -->
+        <div class="bg-white border border-brand-border rounded-xl p-6 shadow-sm">
+          <div class="w-12 h-12 rounded-lg bg-brand-dark text-brand-blue font-mono font-bold text-lg flex items-center justify-center mb-4">
+            ЕП
+          </div>
+          <div class="text-xs font-mono font-bold text-brand-blue uppercase">Руководитель / Техлид</div>
+          <h3 class="text-lg font-bold text-brand-dark mt-1">Егор Пережогин</h3>
+          <p class="text-sm text-slate-600 mt-2 leading-relaxed">
+            Управление проектом, формирование технических требований, взаимодействие с вузами, инжиниринговыми центрами и заказчиками.
+          </p>
+        </div>
+
+        <!-- Участник 2 -->
+        <div class="bg-white border border-brand-border rounded-xl p-6 shadow-sm">
+          <div class="w-12 h-12 rounded-lg bg-brand-surface border border-brand-border text-brand-dark font-mono font-bold text-lg flex items-center justify-center mb-4">
+            ИК
+          </div>
+          <div class="text-xs font-mono font-bold text-slate-500 uppercase">Механика и расчёты</div>
+          <h3 class="text-lg font-bold text-brand-dark mt-1">Инженер‑конструктор</h3>
+          <p class="text-sm text-slate-600 mt-2 leading-relaxed">
+            Проектирование механической части, расчёт шнековой пары, материального цилиндра, узла смыкания пресс-формы и силовой рамы.
+          </p>
+        </div>
+
+        <!-- Участник 3 -->
+        <div class="bg-white border border-brand-border rounded-xl p-6 shadow-sm">
+          <div class="w-12 h-12 rounded-lg bg-brand-surface border border-brand-border text-brand-dark font-mono font-bold text-lg flex items-center justify-center mb-4">
+            ИЭ
+          </div>
+          <div class="text-xs font-mono font-bold text-slate-500 uppercase">Силовая часть</div>
+          <h3 class="text-lg font-bold text-brand-dark mt-1">Инженер‑электронщик</h3>
+          <p class="text-sm text-slate-600 mt-2 leading-relaxed">
+            Разработка схемы питания 220 В, подбор хомутовых нагревателей, термопар, твердотельных реле и контуров электробезопасности.
+          </p>
+        </div>
+
+        <!-- Участник 4 -->
+        <div class="bg-white border border-brand-border rounded-xl p-6 shadow-sm">
+          <div class="w-12 h-12 rounded-lg bg-brand-surface border border-brand-border text-brand-dark font-mono font-bold text-lg flex items-center justify-center mb-4">
+            ПО
+          </div>
+          <div class="text-xs font-mono font-bold text-slate-500 uppercase">Автоматизация</div>
+          <h3 class="text-lg font-bold text-brand-dark mt-1">Программист</h3>
+          <p class="text-sm text-slate-600 mt-2 leading-relaxed">
+            Прошивка контроллера, реализация точных ПИД-алгоритмов терморегуляции и интерфейса индикации рабочих режимов станка.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== 10. ФУТЕР И ФОРМА ОБРАТНОЙ СВЯЗИ ==================== -->
+  <footer id="contact" class="bg-brand-dark text-white pt-16 pb-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 pb-14 border-b border-slate-800">
+        <!-- Левая колонка: Контакты -->
+        <div class="lg:col-span-5 space-y-6">
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded bg-brand-graphite border border-slate-700 text-xs font-mono text-brand-blue">
+            Сотрудничество и пилотирование
+          </div>
+          <h2 class="text-2xl sm:text-3xl font-extrabold text-white">
+            Запросить коммерческое предложение или тестовую отливку
+          </h2>
+          <p class="text-slate-300 text-sm sm:text-base leading-relaxed">
+            Открыты к проведению пилотных испытаний предсерийного образца ПротоТПА‑100 на задачах промышленных предприятий, КБ, вузов и ЦМИТов.
+          </p>
+
+          <div class="bg-brand-graphite border border-slate-800 rounded-xl p-5 space-y-3">
+            <div class="text-xs font-mono uppercase text-slate-400">Руководитель проекта</div>
+            <div class="text-lg font-bold text-white">Егор Пережогин</div>
+            <div class="text-sm text-slate-300 space-y-1.5 pt-1">
+              <div class="flex items-center gap-2">
+                <span class="text-brand-blue font-mono">TG / Тел:</span>
+                <span>По запросу через форму или в карточке СберЮнити</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="text-brand-blue font-mono">Локация:</span>
+                <span>Российская Федерация</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Правая колонка: Форма заявки -->
+        <div class="lg:col-span-7">
+          <div class="bg-brand-graphite border border-slate-700 rounded-xl p-6 sm:p-8">
+            <h3 class="text-xl font-bold text-white mb-6">Заявка на пилот / консультацию</h3>
+            
+            <form id="footer-form" class="space-y-4">
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label for="f-name" class="block text-xs font-medium text-slate-300 mb-1.5">Ваше имя *</label>
+                  <input id="f-name" type="text" required placeholder="Иван Петров" class="w-full px-4 py-3 rounded-lg bg-brand-dark border border-slate-700 text-white placeholder-slate-500 text-sm focus:outline-none focus:border-brand-blue" />
+                </div>
+                <div>
+                  <label for="f-org" class="block text-xs font-medium text-slate-300 mb-1.5">Организация / Вуз *</label>
+                  <input id="f-org" type="text" required placeholder="ООО «Прибор» / Технический вуз" class="w-full px-4 py-3 rounded-lg bg-brand-dark border border-slate-700 text-white placeholder-slate-500 text-sm focus:outline-none focus:border-brand-blue" />
+                </div>
+              </div>
+
+              <div>
+                <label for="f-contact" class="block text-xs font-medium text-slate-300 mb-1.5">Телефон, Telegram или Email *</label>
+                <input id="f-contact" type="text" required placeholder="+7 (999) 000-00-00 или @username" class="w-full px-4 py-3 rounded-lg bg-brand-dark border border-slate-700 text-white placeholder-slate-500 text-sm focus:outline-none focus:border-brand-blue" />
+              </div>
+
+              <div>
+                <label for="f-comment" class="block text-xs font-medium text-slate-300 mb-1.5">Задача или комментарий</label>
+                <textarea id="f-comment" rows="3" placeholder="Например: интересует поставка для лаборатории или тестовая отливка корпусной детали из АБС" class="w-full px-4 py-3 rounded-lg bg-brand-dark border border-slate-700 text-white placeholder-slate-500 text-sm focus:outline-none focus:border-brand-blue"></textarea>
+              </div>
+
+              <button type="submit" class="w-full py-3.5 px-6 bg-brand-blue hover:bg-brand-blueHover text-white font-semibold text-sm sm:text-base rounded-lg transition-colors shadow-lg shadow-brand-blue/20">
+                Отправить заявку
+              </button>
+            </form>
+
+            <!-- Сообщение об успешной отправке -->
+            <div id="footer-success" class="hidden mt-4 p-4 rounded-lg bg-emerald-500/15 border border-emerald-500/40 text-emerald-300 text-sm">
+              <strong class="block text-white font-semibold mb-1">Заявка принята!</strong>
+              Спасибо за обращение. Руководитель проекта Егор Пережогин свяжется с вами по указанным контактам для обсуждения деталей.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Нижняя строка футера -->
+      <div class="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-400">
+        <div class="flex items-center gap-2">
+          <span class="font-bold text-white">ПротоТПА‑100</span>
+          <span>• Настольный термопластавтомат для прототипирования и малых серий</span>
+        </div>
+        <div>
+          © 2026 Проект Егора Пережогина. Все права защищены.
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ==================== МОДАЛЬНОЕ ОКНО ЗАЯВКИ ==================== -->
+  <div id="lead-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-black/75 backdrop-blur-sm" role="dialog" aria-modal="true">
+    <div class="bg-brand-graphite border border-slate-700 rounded-xl max-w-md w-full p-6 sm:p-7 text-white shadow-2xl relative">
+      <button onclick="closeModal()" type="button" class="absolute top-4 right-4 p-2 rounded-lg text-slate-400 hover:text-white hover:bg-brand-dark" aria-label="Закрыть окно">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+
+      <div class="font-mono text-xs text-brand-blue uppercase tracking-wider mb-1">ПротоТПА‑100</div>
+      <h3 id="modal-title" class="text-xl font-bold text-white">Оставить заявку на пилот</h3>
+      <p class="text-sm text-slate-300 mt-1.5 mb-5">
+        Оставьте контакты — направим спецификацию и обсудим пилотное внедрение.
+      </p>
+
+      <form id="modal-form" class="space-y-4">
+        <div>
+          <label for="m-name" class="block text-xs font-medium text-slate-300 mb-1">Ваше имя *</label>
+          <input id="m-name" type="text" required placeholder="Алексей Смирнов" class="w-full px-3.5 py-2.5 rounded-lg bg-brand-dark border border-slate-700 text-white placeholder-slate-500 text-sm focus:outline-none focus:border-brand-blue" />
+        </div>
+        <div>
+          <label for="m-org" class="block text-xs font-medium text-slate-300 mb-1">Организация / Учебное заведение *</label>
+          <input id="m-org" type="text" required placeholder="Инжиниринговый центр / ООО" class="w-full px-3.5 py-2.5 rounded-lg bg-brand-dark border border-slate-700 text-white placeholder-slate-500 text-sm focus:outline-none focus:border-brand-blue" />
+        </div>
+        <div>
+          <label for="m-contact" class="block text-xs font-medium text-slate-300 mb-1">Телефон или Telegram *</label>
+          <input id="m-contact" type="text" required placeholder="+7 (999) 000-00-00 / @telegram" class="w-full px-3.5 py-2.5 rounded-lg bg-brand-dark border border-slate-700 text-white placeholder-slate-500 text-sm focus:outline-none focus:border-brand-blue" />
+        </div>
+        <div>
+          <label for="m-comment" class="block text-xs font-medium text-slate-300 mb-1">Комментарий</label>
+          <textarea id="m-comment" rows="2" placeholder="Укажите интересующий формат сотрудничества" class="w-full px-3.5 py-2.5 rounded-lg bg-brand-dark border border-slate-700 text-white placeholder-slate-500 text-sm focus:outline-none focus:border-brand-blue"></textarea>
+        </div>
+        <button type="submit" class="w-full py-3 px-5 bg-brand-blue hover:bg-brand-blueHover text-white font-semibold text-sm rounded-lg transition-colors">
+          Отправить запрос
+        </button>
+      </form>
+
+      <div id="modal-success" class="hidden py-6 text-center space-y-3">
+        <div class="w-12 h-12 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center mx-auto font-bold text-xl">
+          ✓
+        </div>
+        <h4 class="text-lg font-bold text-white">Заявка успешно отправлена</h4>
+        <p class="text-sm text-slate-300">
+          Мы получили ваши данные. Егор Пережогин свяжется с вами в ближайшее рабочее время.
+        </p>
+        <button onclick="closeModal()" type="button" class="mt-2 px-5 py-2 rounded-lg bg-brand-dark border border-slate-700 text-sm font-medium text-white hover:bg-slate-800">
+          Закрыть
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== СКРИПТЫ ИНТЕРАКТИВНОСТИ ==================== -->
+  <script>
+    // Мобильное меню
+    const mobileBtn = document.getElementById('mobile-menu-btn');
+    const mobileMenu = document.getElementById('mobile-menu');
+
+    mobileBtn.addEventListener('click', () => {
+      mobileMenu.classList.toggle('hidden');
+    });
+
+    // Закрытие мобильного меню при клике на ссылку
+    mobileMenu.querySelectorAll('a').forEach(link => {
+      link.addEventListener('click', () => {
+        mobileMenu.classList.add('hidden');
+      });
+    });
+
+    // Модальное окно
+    const modal = document.getElementById('lead-modal');
+    const modalTitle = document.getElementById('modal-title');
+    const modalForm = document.getElementById('modal-form');
+    const modalSuccess = document.getElementById('modal-success');
+
+    function openModal(titleText) {
+      if (titleText) {
+        modalTitle.textContent = titleText;
+      }
+      modalForm.classList.remove('hidden');
+      modalSuccess.classList.add('hidden');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal() {
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+      document.body.style.overflow = '';
+    }
+
+    // Закрытие модалки по клику на фон или Escape
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) closeModal();
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && !modal.classList.contains('hidden')) {
+        closeModal();
+      }
+    });
+
+    // Обработка отправки формы в модальном окне
+    modalForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      modalForm.classList.add('hidden');
+      modalSuccess.classList.remove('hidden');
+      modalForm.reset();
+    });
+
+    // Обработка отправки формы в футере
+    const footerForm = document.getElementById('footer-form');
+    const footerSuccess = document.getElementById('footer-success');
+
+    footerForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      footerSuccess.classList.remove('hidden');
+      footerForm.reset();
+    });
+  </script>
+</body>
+</html>
